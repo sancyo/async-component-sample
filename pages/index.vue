@@ -1,41 +1,57 @@
 <template>
   <div class="container">
-    <div>
-      <Logo />
-      <h1 class="title">async-component-sample</h1>
-      <div class="links">
-        <a
-          href="https://nuxtjs.org/"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="button--green"
-        >
-          Documentation
-        </a>
-        <a
-          href="https://github.com/nuxt/nuxt.js"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="button--grey"
-        >
-          GitHub
-        </a>
-      </div>
+    <h2 class="title">async component sample</h2>
+    <div class="content">
+      <div v-if="isLoading" class="loading"></div>
+      <img v-if="!isLoading" class="post" :src="image" />
+    </div>
+    <div class="btn">
+      <button @click="setContent()">呼ぶ</button>
+      <button @click="deletePost()">削除</button>
     </div>
   </div>
 </template>
 
 <script>
-export default {}
+import axios from 'axios'
+export default {
+  data() {
+    return {
+      isLoading: false,
+      image: '',
+    }
+  },
+  created() {
+    this.setContent()
+  },
+  methods: {
+    async getPost() {
+      const { data } = await axios.get(
+        'https://designdock02.microcms.io/api/v1/posts/jpkq-bjw8',
+        {
+          headers: { 'X-API-KEY': process.env.API_KEY },
+        }
+      )
+      return data.image.url
+    },
+    async setContent() {
+      this.isLoading = true
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+      this.image = await this.getPost()
+      this.isLoading = false
+    },
+    deletePost() {
+      this.image = ''
+    },
+  },
+}
 </script>
 
 <style>
 .container {
   margin: 0 auto;
   min-height: 100vh;
-  display: flex;
   justify-content: center;
-  align-items: center;
   text-align: center;
 }
 
@@ -44,9 +60,9 @@ export default {}
     'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   display: block;
   font-weight: 300;
-  font-size: 100px;
-  color: #35495e;
+  font-size: 30px;
   letter-spacing: 1px;
+  margin: 30px 0;
 }
 
 .subtitle {
@@ -59,5 +75,36 @@ export default {}
 
 .links {
   padding-top: 15px;
+}
+
+.content {
+  margin: 100px auto;
+  background: #f3f3f4;
+  width: 400px;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading {
+  color: #323232;
+  width: 30px;
+  height: 30px;
+  margin: 0 auto;
+  border: 5px solid #323232;
+  border-right: 5px solid transparent;
+  border-radius: 50%;
+  animation: rotate 1s linear infinite;
+}
+
+.post {
+  width: 100%;
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>

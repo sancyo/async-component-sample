@@ -1,3 +1,5 @@
+require('dotenv').config()
+const { API_KEY } = process.env
 export default {
   // Target (https://go.nuxtjs.dev/config-target)
   target: 'static',
@@ -39,4 +41,7 @@ export default {
 
   // Build Configuration (https://go.nuxtjs.dev/config-build)
   build: {},
+  env: {
+    API_KEY,
+  },
 }
